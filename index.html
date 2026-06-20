@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For You, Papa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Poppins:wght@400;500;600&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Strict Mobile Formatting & Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4eae1;
+            color: #2c2520;
+            width: 100vw;
+            overflow-x: hidden;
+        }
+
+        /* ----------------------------------------- */
+        /* PASSWORD POPUP STYLES                     */
+        /* ----------------------------------------- */
+        .password-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(38, 28, 20, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: all 0.5s ease;
+        }
+        .password-card {
+            background: #fbf6f0;
+            width: 100%;
+            max-width: 320px;
+            padding: 30px 20px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+        .lock-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+        .password-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: #211914;
+        }
+        .password-card p {
+            font-size: 13px;
+            color: #7c6e64;
+            margin-bottom: 20px;
+        }
+        .password-input {
+            width: 100%;
+            padding: 14px;
+            border: 1.5px solid #e2d3c5;
+            background: #fff;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            outline: none;
+            margin-bottom: 15px;
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: 2px;
+        }
+        .password-input:focus {
+            border-color: #b7791f;
+        }
+        .submit-pass-btn {
+            background: #211914;
+            color: #fbf6f0;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+        }
+        .error-msg {
+            color: #e53e3e;
+            font-size: 12px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        /* Common Screen Styles */
+        .screen {
+            width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+            text-align: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+            position: relative;
+        }
+
+        /* SCREEN 1: WELCOME PAGE (Matches Image) */
+        #screen1 {
+            background: radial-gradient(circle at center, #fbf6f0 0%, #e2d3c5 100%);
+        }
+        .shirt-icon {
+            font-size: 80px;
+            margin-bottom: 25px;
+            filter: drop-shadow(0px 8px 12px rgba(0,0,0,0.08));
+        }
+        .sub-heading-top {
+            font-family: 'Cinzel', serif;
+            font-size: 13px;
+            letter-spacing: 4px;
+            color: #7c6e64;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .main-title-surprise {
+            font-family: 'Playfair Display', serif;
+            font-size: 38px;
+            font-weight: 700;
+            color: #261c14;
+            line-height: 1.2;
+            margin-bottom: 5px;
+        }
+        .italic-title {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 400;
+            font-size: 36px;
+            color: #5c4d42;
+            display: block;
+            margin-bottom: 20px;
+        }
+        .credit-text {
+            font-size: 15px;
+            color: #6b5e53;
+            margin-bottom: 40px;
+        }
+        .open-btn {
+            background-color: #211914;
+            color: #fbf6f0;
+            border: none;
+            padding: 16px 45px;
+            font-size: 17px;
+            font-weight: 600;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(38, 28, 20, 0.2);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* SCREEN 2: 18 YEARS COUNTER */
+        #screen2 {
+            background-color: #fbf6f0;
+        }
+        .counter-top-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            color: #5c4d42;
+            margin-bottom: 15px;
+        }
+        .counter-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 90px;
+            font-weight: 700;
+            color: #1a365d;
+            line-height: 1;
+            margin-bottom: 15px;
+        }
+        .counter-bottom-text {
+            font-size: 16px;
+            color: #718096;
+            margin-bottom: 30px;
+            text-transform: lowercase;
+        }
+        .fathers-day-punch {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.5s ease 0.5s;
+        }
+        .fathers-day-punch.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .action-btn {
+            background-color: #1a365d;
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 14px;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 6px 15px rgba(26, 54, 93, 0.2);
+            opacity: 0;
+            transition: opacity 0.5s ease 0.8s;
+        }
+        .action-btn.show {
+            opacity: 1;
+        }
+
+        /* SCREEN 3: LONG SCROLLING POLAROID STRIP */
+        #screen3 {
+            background-color: #f5efe6;
+            display: block;
+            overflow-y: auto;
+        }
+        .polaroid-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 35px;
+            padding-top: 30px;
+            padding-bottom: 50px;
+        }
+        .polaroid {
+            background: white;
+            padding: 15px 15px 25px 15px;
+            width: 90%;
+            max-width: 320px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border-radius: 4px;
+            transform: rotate(var(--rot));
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .polaroid-image-wrapper {
+            width: 100%;
+            aspect-ratio: 4/5; 
+            overflow: hidden;
+            border: 1px solid #edf2f7;
+            background-color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .polaroid img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; 
+            background-color: #e2e8f0;
+        }
+        .polaroid-caption {
+            font-family: 'Caveat', cursive;
+            font-size: 24px;
+            color: #333;
+            margin-top: 15px;
+            text-align: center;
+            width: 100%;
+        }
+        .surprise-trigger-btn {
+            background-color: #b7791f;
+            color: white;
+            border: none;
+            padding: 16px 45px;
+            font-size: 17px;
+            font-weight: 600;
+            border-radius: 14px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 6px 15px rgba(183, 121, 31, 0.2);
+        }
+
+        /* SCREEN 4: AESTHETIC NOTEBOOK LETTER WITH TYPING EFFECT */
+        #screen4 {
+            background-color: #eae3d2;
+        }
+        .notebook-page {
+            background: #fffdf6;
+            width: 100%;
+            max-width: 340px;
+            min-height: 400px;
+            padding: 35px 25px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            position: relative;
+            text-align: left;
+            border-left: 2px solid #ff8a8a;
+        }
+        .notebook-page::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(rgba(0,0,0,0) 0%, rgba(226,232,240,0.8) 5%, rgba(0,0,0,0) 6%) 0 0px / 100% 28px;
+            pointer-events: none;
+            border-radius: 8px;
+        }
+        .letter-content {
+            font-family: 'Caveat', cursive;
+            font-size: 24px;
+            line-height: 28px;
+            color: #2d3748;
+            position: relative;
+            z-index: 1;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" src="music.mp3" loop></audio>
+
+    <div class="password-overlay" id="lockOverlay">
+        <div class="password-card">
+            <div class="lock-icon">🔒</div>
+            <h3>Enter Password</h3>
+            <p>Sirf Papa aur Meet ke liye!</p>
+            <input type="password" class="password-input" id="passInput" placeholder="••••••••">
+            <button class="submit-pass-btn" onclick="checkPassword()">Unlock Surprise</button>
+            <div class="error-msg" id="errorMsg">Galat password hai bhai! Firse try kar.</div>
+        </div>
+    </div>
+
+    <div class="screen active" id="screen1">
+        <div class="shirt-icon">👔</div>
+        <p class="sub-heading-top">A Father's Day Surprise</p>
+        <h1 class="main-title-surprise">
+            Someone wrote
+            <span class="italic-title">this just for you</span>
+        </h1>
+        <p class="credit-text">Meet made this just for you 👔</p>
+        <button class="open-btn" onclick="goToScreen2()">Open it 🎁</button>
+    </div>
+
+    <div class="screen" id="screen2">
+        <p class="counter-top-text">How many years of Papa</p>
+        <div class="counter-number" id="count">0</div>
+        <p class="counter-bottom-text">years of papa showing love</p>
+        <h2 class="fathers-day-punch" id="punchline">Happy Father's Day, Papa</h2>
+        <button class="action-btn" id="polaroidBtn" onclick="goToScreen3()">Open Polaroid 📸</button>
+    </div>
+
+    <div class="screen" id="screen3">
+        <div class="polaroid-container">
+            
+            <div class="polaroid" style="--rot: -3deg;">
+                <div class="polaroid-image-wrapper">
+                    <img src="photo1.jpg" alt="Memory 1" onerror="this.style.display='none';">
+                </div>
+                <div class="polaroid-caption">Mera Hero 😎</div>
+            </div>
+
+            <div class="polaroid" style="--rot: 2deg;">
+                <div class="polaroid-image-wrapper">
+                    <img src="photo2.jpg" alt="Memory 2">
+                </div>
+                <div class="polaroid-caption">Always Supporting 🤝</div>
+            </div>
+
+            <div class="polaroid" style="--rot: -2deg;">
+                <div class="polaroid-image-wrapper">
+                    <img src="photo3.jpg" alt="Memory 3">
+                </div>
+                <div class="polaroid-caption">Best Memories ❤️</div>
+            </div>
+
+            <div class="polaroid" style="--rot: 3deg;">
+                <div class="polaroid-image-wrapper">
+                    <img src="photo4.jpg" alt="Memory 4">
+                </div>
+                <div class="polaroid-caption">The Best Guide 🗺️</div>
+            </div>
+
+            <div class="polaroid" style="--rot: -1deg;">
+                <div class="polaroid-image-wrapper">
+                    <img src="photo5.jpg" alt="Memory 5">
+                </div>
+                <div class="polaroid-caption">Super Dad 💪</div>
+            </div>
+
+            <div class="polaroid" style="--rot: 2deg;">
+                <div class="polaroid-image-wrapper">
+                    <img src="photo6.jpg" alt="Memory 6">
+                </div>
+                <div class="polaroid-caption">Pure Love ✨</div>
+            </div>
+
+            <div class="polaroid" style="--rot: -3deg;">
+                <div class="polaroid-image-wrapper">
+                    <img src="photo7.jpg" alt="Memory 7">
+                </div>
+                <div class="polaroid-caption">Happiest Times 🌟</div>
+            </div>
+
+            <div class="polaroid" style="--rot: 1deg;">
+                <div class="polaroid-image-wrapper">
+                    <img src="photo8.jpg" alt="Memory 8">
+                </div>
+                <div class="polaroid-caption">Family Pillar 🏛️</div>
+            </div>
+
+            <div class="polaroid" style="--rot: -2deg;">
+                <div class="polaroid-image-wrapper">
+                    <img src="photo9.jpg" alt="Memory 9">
+                </div>
+                <div class="polaroid-caption">Unforgettable Day 📸</div>
+            </div>
+
+            <button class="surprise-trigger-btn" onclick="goToScreen4()">Open Surprise 🎁</button>
+        </div>
+    </div>
+
+    <div class="screen" id="screen4">
+        <div class="notebook-page">
+            <div class="letter-content" id="typewriterText"></div>
+        </div>
+    </div>
+
+    <script>
+        // PASSWORD CHECK & AUDIO PLAY FUNCTION
+        function checkPassword() {
+            const enteredPass = document.getElementById('passInput').value;
+            const correctPass = "15031977"; 
+            const errorMsg = document.getElementById('errorMsg');
+            const lockOverlay = document.getElementById('lockOverlay');
+            const music = document.getElementById('bgMusic');
+
+            if (enteredPass === correctPass) {
+                // Play music safely on user interaction
+                music.play().catch(error => console.log("Audio autoplay restriction: ", error));
+                
+                lockOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    lockOverlay.style.display = 'none';
+                }, 500);
+            } else {
+                errorMsg.style.display = 'block';
+                document.getElementById('passInput').value = "";
+            }
+        }
+
+        document.getElementById('passInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        function changeScreen(currentId, nextId) {
+            document.getElementById(currentId).classList.remove('active');
+            document.getElementById(nextId).classList.add('active');
+            window.scrollTo(0, 0); 
+        }
+
+        // Screen 1 -> Screen 2 (Counter Anim)
+        function goToScreen2() {
+            changeScreen('screen1', 'screen2');
+            
+            let countElement = document.getElementById('count');
+            let currentNum = 0;
+            let targetNum = 18;
+            
+            let interval = setInterval(() => {
+                if(currentNum <= targetNum) {
+                    countElement.innerText = currentNum;
+                    currentNum++;
+                } else {
+                    clearInterval(interval);
+                    document.getElementById('punchline').classList.add('show');
+                    document.getElementById('polaroidBtn').classList.add('show');
+                }
+            }, 80); 
+        }
+
+        // Screen 2 -> Screen 3
+        function goToScreen3() {
+            changeScreen('screen2', 'screen3');
+        }
+
+        // Screen 3 -> Screen 4 (Letter Typewriter Animation)
+        function goToScreen4() {
+            changeScreen('screen3', 'screen4');
+            
+            const letterText = "Dear Papa,\n\nHappy Father's Day! ❤️\n\nMain zyada bol nahi paata, par aap acche se jaante ho ki aap mere liye kya ho. Yeh 18 saal mere saath rehne, meri har zidd poori karne aur mujhe hamesha support karne ke liye Thank You!\n\nAap duniya ke sabse cool aur best papa ho. I love you!\n\n— Meet";
+            
+            let index = 0;
+            const targetContainer = document.getElementById('typewriterText');
+            targetContainer.innerHTML = ""; 
+
+            function typeEffect() {
+                if (index < letterText.length) {
+                    targetContainer.innerHTML += letterText.charAt(index);
+                    index++;
+                    let currentDelay = 40; 
+                    if (letterText.charAt(index - 1) === '!' || letterText.charAt(index - 1) === '.') {
+                        currentDelay = 400; 
+                    }
+                    setTimeout(typeEffect, currentDelay);
+                }
+            }
+            
+            setTimeout(typeEffect, 500);
+        }
+    </script>
+</body>
+</html>
